@@ -27,15 +27,14 @@
 		private var _accueil:MovieClip;
 		private var _jeu:MovieClip;
 		private var _pointage:MovieClip;
-		
-		//SOUND
 		private var _music:Sound;
 		private var _channel:SoundChannel;
 		
 		//deux cartes de mon chat rouge pour le moment
 		//private var _cartes:Array=[2,2];
 		
-		//quatre cartes placées, les chiffres correspondent aux frames
+		//20 cartes placées, les chiffres correspondent aux frames
+		//à l'emplacement 0 du tableau, c'est la frame 2, 1 frame 2, 2 frame 3...
 		private var _cartes:Array=[2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11];
 		
 		/**
@@ -74,20 +73,19 @@
 			
 			//creation de lMinstace de l'accueil
 			_accueil = new AccueilMC();
-			
-			//MUSIC
-			//_music = new music();
-			
+			_music = new Music();
+
 			//associationd'un canal pour contrôler le son, si nécessaire
 			//bon pour les musique, son devant joueur en boucle, etc.
 			//jouer la musiaue en loop (999 fois)
-			//_channel = _music.play(0, 999);
+			_channel = _music.play(0, 999);
 			
 			//ecouteur de click
 			_accueil.btnJouer.addEventListener(MouseEvent.CLICK, onStartGame);
 			
 			//ajouter a l'affichage
 			addChild(_accueil);
+			
 		}
 		
 		/**
@@ -108,6 +106,7 @@
 			{
 				_jeu = new JeuMC();
 			}
+			
 			//ajout du jeu à l'affichage
 			addChild(_jeu);
 			
@@ -116,10 +115,16 @@
 			
 		}
 		
+		
+	
+		
 		private function distribuerCarte():void
 		{
 			for (var i:int=0; i<20; i++){
-				
+				//pointeur permettant de montrer qu'on peut cliquer sur les cartes
+				//ne marche que dans la fonction dustriberCarte, à priori car il y a i.
+				_jeu["carte"+i].buttonMode=true;								
+
 				//la variable r qui est un entier,
 				//Cette variable r prend pour valeur un nombre tiré au hasard à 
 				//l'aide du Math.random qui se balade dans la longueur du tableau
@@ -138,8 +143,15 @@
 				//De ce fait au fur à a mesure mon tableau perd un item à chaque boucle
 				trace(_cartes);
 				
-				_jeu["carte"+i].gotoAndStop(carterandom);
+				//la ligne suivante indique que dans la page jeu, on prend le movieclip 
+				//"carte"+i (i correspondant à un chiffre allant de 0 à 20 (carte0, carte1, etc)
+				//de là, on applique la fonction gotoAndStop qui permet d'aller à une frame
+				//qui est ici définie de façon random avec la variable carterandom
+				_jeu["carte"+i].gotoAndStop(1);
+				
+
 								
+				
 			}
 			
 			//je réalise une boucle for allant de 0 jusque 20 afin d'appliquer le
@@ -153,6 +165,8 @@
 			//for (var o:int = 0; o<20; o++){
 			//	_jeu["carte"+i].gotoAndStop(carterandom);
 			//}
+			
+			
 
 			
 		}
