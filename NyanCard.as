@@ -33,6 +33,7 @@
 		//ma variable i de la fonction distribuerCarte
 		private var _chiffrerandom:int;
 		private var _carterandomee:int;
+		private var _tableausvg:Array=[];
 		
 		//pour dire si la carte est de dos ou de face
 		private var _cartedos:Boolean;
@@ -168,9 +169,11 @@
 				_chiffrerandom = i;
 				_carterandomee =carterandom;
 				
-				_cartedos = true;
+				_tableausvg.push(carterandom);
 
 		}
+		
+		trace (_tableausvg);
 		
 		//une carte se retourne car on décide de i<1... Donc la première, c'est donc raté
 		//Mais le principe est là
@@ -181,9 +184,10 @@
 		function retourner(evt:MouseEvent)
 		{
 			for(var i:int=0; i<1; i++)
-			{
-				_jeu["carte"+_chiffrerandom].gotoAndStop(_carterandomee);
-			}
+			
+				{
+					_jeu["carte"+i].gotoAndStop(_carterandomee);
+				}
 		}
 					
 			//je réalise une boucle for allant de 0 jusque 20 afin d'appliquer le
