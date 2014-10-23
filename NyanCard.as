@@ -30,12 +30,18 @@
 		private var _music:Sound;
 		private var _channel:SoundChannel;
 		
-		//deux cartes de mon chat rouge pour le moment
-		//private var _cartes:Array=[2,2];
+		//ma variable i de la fonction distribuerCarte
+		private var _chiffrerandom:int;
+		private var _carterandomee:int;
+		
+		//pour dire si la carte est de dos ou de face
+		private var _cartedos:Boolean;
+		
 		
 		//20 cartes placées, les chiffres correspondent aux frames
 		//à l'emplacement 0 du tableau, c'est la frame 2, 1 frame 2, 2 frame 3...
 		private var _cartes:Array=[2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11];
+		
 		
 		/**
 		 * Constructeur de la classe
@@ -112,12 +118,15 @@
 			
 			//on lance la fonction distribuerCarte
 			distribuerCarte();
+			banane();
 			
 		}
 		
-		
-	
-		
+		private function banane():void
+		{
+			trace("le chiffre random est: "+_chiffrerandom);
+			trace("la carte random est: "+_carterandomee);
+		}
 		private function distribuerCarte():void
 		{
 			for (var i:int=0; i<20; i++){
@@ -141,7 +150,7 @@
 
 				//et à la fin de cela, j'affiche mon tableau 
 				//De ce fait au fur à a mesure mon tableau perd un item à chaque boucle
-				trace(_cartes);
+				//trace(_cartes);
 				
 				//la ligne suivante indique que dans la page jeu, on prend le movieclip 
 				//"carte"+i (i correspondant à un chiffre allant de 0 à 20 (carte0, carte1, etc)
@@ -149,11 +158,34 @@
 				//qui est ici définie de façon random avec la variable carterandom
 				_jeu["carte"+i].gotoAndStop(1);
 				
-
-								
+				//essai de retournement de cartes...
 				
+				
+				trace("Contenant: "+i);
+				trace("prend l'image n°: " +carterandom);
+				
+				//je stock ma valeur de i pour pouvoir la réutiliser par la suite
+				_chiffrerandom = i;
+				_carterandomee =carterandom;
+				
+				_cartedos = true;
+
+		}
+		
+		//une carte se retourne car on décide de i<1... Donc la première, c'est donc raté
+		//Mais le principe est là
+		//Il faudrait peut-être intégrer un bout de code de cette fonction dans la fonction
+		//distribuer afin de récupérer les bonnes valeurs
+		_jeu.addEventListener(MouseEvent.CLICK, retourner)
+				
+		function retourner(evt:MouseEvent)
+		{
+			for(var i:int=0; i<1; i++)
+			{
+				_jeu["carte"+_chiffrerandom].gotoAndStop(_carterandomee);
 			}
-			
+		}
+					
 			//je réalise une boucle for allant de 0 jusque 20 afin d'appliquer le
 			//gotoAndStop sur toutes mes cartes dans un ordre chronologique.
 			//Problème rencontré: le carterandom est le même pour toutes les cartes
@@ -165,8 +197,6 @@
 			//for (var o:int = 0; o<20; o++){
 			//	_jeu["carte"+i].gotoAndStop(carterandom);
 			//}
-			
-			
 
 			
 		}
