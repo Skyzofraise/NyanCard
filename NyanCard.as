@@ -23,6 +23,8 @@
 	public class NyanCard extends MovieClip
 	{
 		
+		
+		
 		//pages-Écrans
 		private var _accueil:MovieClip;
 		private var _jeu:MovieClip;
@@ -119,15 +121,10 @@
 			
 			//on lance la fonction distribuerCarte
 			distribuerCarte();
-			banane();
 			
 		}
 		
-		private function banane():void
-		{
-			trace("le chiffre random est: "+_chiffrerandom);
-			trace("la carte random est: "+_carterandomee);
-		}
+
 		private function distribuerCarte():void
 		{
 			for (var i:int=0; i<20; i++){
@@ -158,6 +155,10 @@
 				//de là, on applique la fonction gotoAndStop qui permet d'aller à une frame
 				//qui est ici définie de façon random avec la variable carterandom
 				_jeu["carte"+i].gotoAndStop(1);
+				_jeu["carte"+i].carteNum = carterandom;
+				
+				
+				_jeu["carte"+i].addEventListener(MouseEvent.CLICK, retourner)
 				
 				//essai de retournement de cartes...
 				
@@ -166,30 +167,28 @@
 				trace("prend l'image n°: " +carterandom);
 				
 				//je stock ma valeur de i pour pouvoir la réutiliser par la suite
-				_chiffrerandom = i;
-				_carterandomee =carterandom;
+				//_chiffrerandom = i;
+				//_carterandomee =carterandom;
 				
-				_tableausvg.push(carterandom);
+				
 
 		}
 		
-		trace (_tableausvg);
+		
 		
 		//une carte se retourne car on décide de i<1... Donc la première, c'est donc raté
 		//Mais le principe est là
 		//Il faudrait peut-être intégrer un bout de code de cette fonction dans la fonction
 		//distribuer afin de récupérer les bonnes valeurs
-		_jeu.addEventListener(MouseEvent.CLICK, retourner)
+		
+		//Problème avec cette ligne venant du fait qu'il faut identifier quelle carte est cliquée
+		
+		
 				
-		function retourner(evt:MouseEvent)
-		{
-			for(var i:int=0; i<1; i++)
-			
-				{
-					_jeu["carte"+i].gotoAndStop(_carterandomee);
-				}
-		}
-					
+		
+		
+		//ça ne marche pas
+		
 			//je réalise une boucle for allant de 0 jusque 20 afin d'appliquer le
 			//gotoAndStop sur toutes mes cartes dans un ordre chronologique.
 			//Problème rencontré: le carterandom est le même pour toutes les cartes
@@ -206,7 +205,14 @@
 		}
 		
 		
-		
+		private function retourner(evt:MouseEvent)
+		{
+			var carte:MovieClip = evt.currentTarget as MovieClip;
+			
+						carte.gotoAndStop(carte.carteNum);
+			
+			
+		}
 		/**
 		 * ******************************************************************************************************************************************************
 		 * Fonctions Plateform Publiques
