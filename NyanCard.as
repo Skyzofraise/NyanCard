@@ -157,7 +157,7 @@
 				_jeu["carte"+i].gotoAndStop(1);
 				_jeu["carte"+i].carteNum = carterandom;
 				
-				
+				//JM est passé
 				_jeu["carte"+i].addEventListener(MouseEvent.CLICK, retourner)
 				
 				//essai de retournement de cartes...
@@ -182,10 +182,6 @@
 		//distribuer afin de récupérer les bonnes valeurs
 		
 		//Problème avec cette ligne venant du fait qu'il faut identifier quelle carte est cliquée
-		
-		
-				
-		
 		
 		//ça ne marche pas
 		
