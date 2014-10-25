@@ -196,13 +196,18 @@
 				trace("la carte retournée 2 est : " + carteTournee2);
 			}
 
-			
 			if(carteTournee1 == carteTournee2){
-				
 				nbCarteRetournees = 0;
 				carteTournee1 = 0;
 				carteTournee2 = 0;
 				trace("Je m'approche de la solution!");
+			}
+			else if(carteTournee1 != carteTournee2){
+				nbCarteRetournees = 0;
+				carteTournee1 = 0;
+				carteTournee2 = 0;	
+				
+				//carte.gotoAndStop(1);
 			}
 
 			
