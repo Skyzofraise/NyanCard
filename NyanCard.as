@@ -14,6 +14,8 @@
 	 * la classe suivante (PlateformEvent) doit être importée afin de pouvoir lancer (dispatchEvent) des événement à l'application Plateform
 	 */
 	import classes.PlateformEvent;
+	import flash.utils.Timer;
+	import flash.events.TimerEvent;
 	
 	/**
 	 * Gabarit de classe document pour Plateform
@@ -39,9 +41,12 @@
 		
 		private var nbCarteRetournees:Number = 0 ;
 		
-		private var carteTournee1:int;
-		private var carteTournee2:int;
+		private var carteTournee1:MovieClip;
+		private var carteTournee2:MovieClip;
 		
+		private var retourneTimer:Timer;
+		private var nbRates:int;
+		private var pairesTrouvees:int;
 		/**
 		 * Constructeur de la classe
 		 */
@@ -91,6 +96,9 @@
 			//ajouter a l'affichage
 			addChild(_accueil);
 			
+			retourneTimer = new Timer(400);
+			retourneTimer.addEventListener(TimerEvent.TIMER, verifcarte);
+			
 		}
 		
 		/**
@@ -104,15 +112,15 @@
 			if (contains(_accueil)) 
 			{
 				removeChild(_accueil);
-				_channel.stop();
+				//_channel.stop();
 			}
 			
 			//creation de la page jeu, si elle n'existe pas déjà
 			if (_jeu == null) 
 			{
 				_jeu = new JeuMC();
-				_music = new Music();
-				_channel = _music.play(0, 999);
+				//_music = new Music();
+				//_channel = _music.play(0, 999);
 			}
 			
 			//ajout du jeu à l'affichage
@@ -123,6 +131,8 @@
 			
 		}
 		
+		
+		
 
 		private function distribuerCarte():void
 		{
@@ -130,7 +140,8 @@
 				//pointeur permettant de montrer qu'on peut cliquer sur les cartes
 				//ne marche que dans la fonction dustriberCarte, à priori car il y a i.
 				_jeu["carte"+i].buttonMode=true;								
-
+				_jeu["carte"+i].paire=false;
+				_jeu["carte"+i].retourne=false;		
 				//la variable r qui est un entier,
 				//Cette variable r prend pour valeur un nombre tiré au hasard à 
 				//l'aide du Math.random qui se balade dans la longueur du tableau
@@ -169,12 +180,19 @@
 		//finalement on n'a pas besoin de boucle.
 		private function retourner(evt:MouseEvent)
 		{
+			if(nbCarteRetournees == 2){
+				return null;
+			}
 			//On créé une variable du nom de carte qui est un MovieClip qui prend
 			//l'évènement actuel comme un MovieClip
 			
 			//currentTarget renvoie l'objet qui traite l’évènement tandis que target  
 			//renvoie l'objet enfant (le noeud cible) qui a déclenché l’évènement.
 			var carte:MovieClip = evt.currentTarget as MovieClip;
+			if(carte.retourne == false){
+				
+			carte.retourne = true;
+			
 			
 			//et de ce fait, on lui dit que dans carte, on va se stopper à carteNum de carte
 			carte.gotoAndStop(carte.carteNum);
@@ -188,47 +206,89 @@
 			
 			//essayer de stocker le numéro des cartes
 			if(nbCarteRetournees == 1){
-				carteTournee1 = carte.carteNum;
-				trace("la carte retournée 1 est : " + carteTournee1);
+				carteTournee1 = carte;
+				carteTournee1.carteNum = carte.carteNum;
+				//trace("la carte retournée 1 est : " + carteTournee1);
 			}
 			else if(nbCarteRetournees == 2){
-				carteTournee2 = carte.carteNum;
-				trace("la carte retournée 2 est : " + carteTournee2);
+				carteTournee2 = carte;
+				carteTournee2.carteNum = carte.carteNum;
+				//trace("la carte retournée 2 est : " + carteTournee2);
 			}
 
-			if(carteTournee1 == carteTournee2){
-				nbCarteRetournees = 0;
-				carteTournee1 = 0;
-				carteTournee2 = 0;
-				trace("Je m'approche de la solution!");
-			}
-			else if(carteTournee1 != carteTournee2){
-				nbCarteRetournees = 0;
-				carteTournee1 = 0;
-				carteTournee2 = 0;	
+			if(carteTournee2 != null && carteTournee1.carteNum == carteTournee2.carteNum){
 				
-				//carte.gotoAndStop(1);
+				//on met le nbCarteRetournees à zéro
+				nbCarteRetournees = 0;
+				//On donne la valeur true à la carteTournee1/2.paire
+				carteTournee1.paire = true;
+				carteTournee2.paire = true;
+				//carteTournee 1 et 2 prennent alors la valeur nulle pour repartir de zéro
+				carteTournee1 = null;
+				carteTournee2 = null;
+				
+				trace("Je m'approche de la solution!");
+				trace ("nombre de ratés : " +nbRates);
+				//on ajoute 1 à chaque paire trouvée
+				pairesTrouvees++;
+				trace ("Paires tournées à : "+pairesTrouvees);
+
 			}
 
+			//cette partie empêche le "je m'approche de la solution"
+			//Mais après ajout de && nbCarteRetournees == 2 cela marche
+			//Car sinon la carteretournee1 n'est jamais = à la carteretournee2
+			else if(nbCarteRetournees == 2 && carteTournee1.carteNum != carteTournee2.carteNum){
+				//On place notre fonction retourneTimer pour qu'elle commence à partir de l'égalité entre deux cartes
+				//Donnant un petit temps afin que l'on voit les deux cartes
+				retourneTimer.start();
+				//on fait +1 aux nombre de ratés
+				nbRates++;
+				trace("Nombre de ratés : " +nbRates);
+						
+			}
+
+			if(pairesTrouvees == 10){
+				trace("terminé!");
+				if (contains(_jeu)) 
+			{
+				removeChild(_jeu);
+				//_channel.stop();
+			}
 			
-			//tout à faux dans l'tableau
-				//et mes deux cartes seront à true
-				//if(nbCarteRetournees > 2){
-					//trace ("Il y a deux cartes retournées");
-					
-					//carte.gotoAndStop(1);
-					//Ma ligne ne marche pas mais il faut que je retire l'option bouton
-					//lors du survol des autres cartes qui sont toujours de dos.
-					//_cartes.buttonMode=false;
-					
-			//	}
-				//else{
-				//	_jeu["carte"+i].buttonMode=false;
-				//}
-		//}
-		
-
-
+			//creation de la page jeu, si elle n'existe pas déjà
+			if (_pointage == null) 
+			{
+				_pointage = new PointageMC();
+				//_music = new Music();
+				//_channel = _music.play(0, 999);
+			}
+			}
+			
+		}// FIN DU IF 
+		} //FIN FONCTION RETOURNER
+			
+			private function verifcarte(e:TimerEvent):void{
+				
+				//On stop le timer retourneTimer
+				retourneTimer.stop();
+				nbCarteRetournees = 0;
+				//la carteTournee1 reprend la valeur 0
+				carteTournee1 = null;
+				//la carteTournee2 reprend la valeur 0
+				carteTournee2 = null;
+				
+				//Dans la boucle allant de 0 à 20 pour i, on dit que si
+				for( var i:int = 0; i<20; i++){
+					//si la paire n'est pas bonne alors
+						if(_jeu["carte"+i].paire == false){
+							//on retourne à la frame un qui est le dos de la carte
+						_jeu["carte"+i].gotoAndStop(1);
+						_jeu["carte"+i].retourne = false;
+						}
+			}
+			
+			
 
 		/**
 		 * ******************************************************************************************************************************************************
