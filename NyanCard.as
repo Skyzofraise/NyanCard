@@ -6,8 +6,8 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.media.Sound;
-	import flash.media.SoundChannel;
+	//import flash.media.Sound;
+	//import flash.media.SoundChannel;
 	
 	/**
 	 * Important !!!!!
@@ -31,9 +31,10 @@
 		private var _accueil:MovieClip;
 		private var _jeu:MovieClip;
 		private var _pointage:MovieClip;
-		private var _music:Sound;
-		private var _channel:SoundChannel;
-		private var _musicaccueil:Sound;
+		
+		//private var _music:Sound;
+		//private var _channel:SoundChannel;
+		//private var _musicaccueil:Sound;
 
 		//20 cartes placées, les chiffres correspondent aux frames
 		//à l'emplacement 0 du tableau, c'est la frame 2, 1 frame 2, 2 frame 3...
@@ -44,9 +45,14 @@
 		private var carteTournee1:MovieClip;
 		private var carteTournee2:MovieClip;
 		
+		private var jeuTimer:Timer;
 		private var retourneTimer:Timer;
+		
 		private var nbRates:int;
 		private var pairesTrouvees:int;
+			
+		private var score:uint = 0;
+		
 		/**
 		 * Constructeur de la classe
 		 */
@@ -83,12 +89,12 @@
 			
 			//creation de lMinstace de l'accueil
 			_accueil = new AccueilMC();
-			_musicaccueil = new MusicAccueil();
+			//_musicaccueil = new MusicAccueil();
 
 			//associationd'un canal pour contrôler le son, si nécessaire
 			//bon pour les musique, son devant joueur en boucle, etc.
 			//jouer la musiaue en loop (999 fois)
-			_channel = _musicaccueil.play(0, 999);
+			//_channel = _musicaccueil.play(0, 999);
 			
 			//ecouteur de click
 			_accueil.btnJouer.addEventListener(MouseEvent.CLICK, onStartGame);
@@ -99,6 +105,13 @@
 			retourneTimer = new Timer(400);
 			retourneTimer.addEventListener(TimerEvent.TIMER, verifcarte);
 			
+			jeuTimer = new Timer(1000);
+			jeuTimer.addEventListener(TimerEvent.TIMER, temps);
+			jeuTimer.start();
+		}
+		
+		private function temps(e:TimerEvent):void{
+			score++;
 		}
 		
 		/**
@@ -125,6 +138,8 @@
 			
 			//ajout du jeu à l'affichage
 			addChild(_jeu);
+			
+
 			
 			//on lance la fonction distribuerCarte
 			distribuerCarte();
@@ -172,8 +187,8 @@
 				//boucle for, ainsi on l'amène à la fonction "retourner"
 				_jeu["carte"+i].addEventListener(MouseEvent.CLICK, retourner)
 								
-				trace("Contenant: "+i);
-				trace("prend l'image n°: " +carterandom);
+				//trace("Contenant: "+i);
+				//trace("prend l'image n°: " +carterandom);
 			}			
 		}
 		
@@ -197,12 +212,7 @@
 			//et de ce fait, on lui dit que dans carte, on va se stopper à carteNum de carte
 			carte.gotoAndStop(carte.carteNum);
 			
-			
-			trace("lolilo"+carte.carteNum);
-			
-			nbCarteRetournees++;
-			trace("Il y a " + nbCarteRetournees);
-			
+			nbCarteRetournees++;			
 			
 			//essayer de stocker le numéro des cartes
 			if(nbCarteRetournees == 1){
@@ -227,11 +237,9 @@
 				carteTournee1 = null;
 				carteTournee2 = null;
 				
-				trace("Je m'approche de la solution!");
-				trace ("nombre de ratés : " +nbRates);
 				//on ajoute 1 à chaque paire trouvée
 				pairesTrouvees++;
-				trace ("Paires tournées à : "+pairesTrouvees);
+
 
 			}
 
@@ -244,12 +252,17 @@
 				retourneTimer.start();
 				//on fait +1 aux nombre de ratés
 				nbRates++;
-				trace("Nombre de ratés : " +nbRates);
+				//trace("Nombre de ratés : " +nbRates);
 						
 			}
-
+			
+			//AFFICHAGE PAGE POINTAGE
 			if(pairesTrouvees == 10){
-				trace("terminé!");
+				
+				jeuTimer.stop();
+				//trace("temps : "+score);
+				
+				//trace("terminé!");
 				if (contains(_jeu)) 
 			{
 				removeChild(_jeu);
@@ -262,6 +275,15 @@
 				_pointage = new PointageMC();
 				//_music = new Music();
 				//_channel = _music.play(0, 999);
+				//on calcule le score de cette façon:
+				//le maximum de points est de 5000
+				//les mauvaises paires retournées valent 100pts
+				//chaque seconde vaut 30pts
+				_pointage.txtPointage.text = (5000 - ((nbRates*100)+(score*30))).toString();
+				
+				_pointage.btnRejouer.addEventListener(MouseEvent.CLICK, onStartGame);
+				
+				addChild(_pointage);
 			}
 			}
 			
